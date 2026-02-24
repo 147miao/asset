@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.property.management.mapper.UserMapper">
+    <select id="selectByPhone" resultType="com.property.management.entity.User">
+        SELECT * FROM pm_user WHERE phone = #{phone} AND deleted = 0
+    </select>
+
+    <select id="selectUserStatistics" resultType="java.util.Map">
+        SELECT 
+            user_type as userType,
+            COUNT(*) as count
+        FROM pm_user 
+        WHERE deleted = 0
+        GROUP BY user_type
+    </select>
+
+    <select id="selectUserFeeStatistics" resultType="java.util.Map">
+        SELECT 
+            fee_type as feeType,
+            SUM(amount) as totalAmount,
+            SUM(paid_amount) as paidAmount,
+            SUM(unpaid_amount) as unpaidAmount
+        FROM pm_fee_record 
+        WHERE user_id = #{userId} AND deleted = 0
+        GROUP BY fee_type
+    </select>
+</mapper>

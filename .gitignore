@@ -1,0 +1,5 @@
+# 忽略所有 node_modules 文件夹
+node_modules/
+
+# 如果你想特指某个路径，也可以写全路径
+# property-management/frontend/admin/node_modules/

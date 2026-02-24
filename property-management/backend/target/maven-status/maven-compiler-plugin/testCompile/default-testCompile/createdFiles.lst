@@ -1,0 +1,10 @@
+com\property\management\exception\GlobalExceptionHandlerTest.class
+com\property\management\service\HouseServiceTest.class
+com\property\management\IntegrationTest.class
+com\property\management\integration\RepairWorkflowIntegrationTest.class
+com\property\management\controller\ProjectControllerTest.class
+com\property\management\service\RepairServiceTest.class
+com\property\management\controller\UserControllerTest.class
+com\property\management\service\ProjectServiceTest.class
+com\property\management\controller\RepairControllerTest.class
+com\property\management\service\UserServiceTest.class

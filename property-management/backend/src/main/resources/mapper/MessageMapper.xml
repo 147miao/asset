@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.property.management.mapper.MessageMapper">
+    <select id="selectUnreadByUserId" resultType="com.property.management.entity.Message">
+        SELECT * FROM pm_message 
+        WHERE receiver_id = #{userId} 
+            AND status = 'unread' 
+            AND deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="countUnreadByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM pm_message 
+        WHERE receiver_id = #{userId} 
+            AND status = 'unread' 
+            AND deleted = 0
+    </select>
+</mapper>

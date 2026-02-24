@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.property.management.mapper.FeeRecordMapper">
+    <select id="selectIncomeStatistics" resultType="java.util.Map">
+        SELECT 
+            DATE(pay_date) as date,
+            SUM(paid_amount) as amount
+        FROM pm_fee_record 
+        WHERE project_id = #{projectId} 
+            AND status = 'paid' 
+            AND pay_date BETWEEN #{startDate} AND #{endDate}
+            AND deleted = 0
+        GROUP BY DATE(pay_date)
+        ORDER BY DATE(pay_date)
+    </select>
+
+    <select id="selectExpenseStatistics" resultType="java.util.Map">
+        SELECT 
+            DATE(create_time) as date,
+            SUM(amount) as amount
+        FROM pm_expense_record 
+        WHERE project_id = #{projectId} 
+            AND create_time BETWEEN #{startDate} AND #{endDate}
+            AND deleted = 0
+        GROUP BY DATE(create_time)
+        ORDER BY DATE(create_time)
+    </select>
+
+    <select id="selectArrearsStatistics" resultType="java.util.Map">
+        SELECT 
+            user_name as userName,
+            house_info as houseInfo,
+            fee_type as feeType,
+            unpaid_amount as unpaidAmount,
+            due_date as dueDate
+        FROM pm_fee_record 
+        WHERE project_id = #{projectId} 
+            AND status = 'unpaid'
+            AND deleted = 0
+        ORDER BY unpaid_amount DESC
+    </select>
+
+    <select id="selectTotalArrears" resultType="java.math.BigDecimal">
+        SELECT COALESCE(SUM(unpaid_amount), 0)
+        FROM pm_fee_record 
+        WHERE project_id = #{projectId} 
+            AND status = 'unpaid'
+            AND deleted = 0
+    </select>
+
+    <select id="selectFeeTypeStatistics" resultType="java.util.Map">
+        SELECT 
+            fee_type as feeType,
+            COUNT(*) as count,
+            SUM(amount) as totalAmount,
+            SUM(paid_amount) as paidAmount,
+            SUM(unpaid_amount) as unpaidAmount
+        FROM pm_fee_record 
+        WHERE project_id = #{projectId} 
+            AND create_time BETWEEN #{startDate} AND #{endDate}
+            AND deleted = 0
+        GROUP BY fee_type
+    </select>
+</mapper>
