@@ -8,9 +8,6 @@ property-management/
 ├── frontend/
 │   ├── admin/           # 管理端
 │   └── owner/           # 业主端
-├── start-backend.bat     # 启动后端
-├── start-admin.bat      # 启动管理端
-└── start-owner.bat      # 启动业主端
 ```
 
 ## 环境要求
@@ -36,7 +33,6 @@ mysql -u root -p1234 property_management < backend/src/main/resources/db/schema.
 ## 配置说明
 
 ### 后端配置
-- 数据库密码：1234
 - 服务端口：8080
 - 配置文件：`backend/src/main/resources/application.yml`
 
@@ -47,24 +43,7 @@ mysql -u root -p1234 property_management < backend/src/main/resources/db/schema.
 
 ## 启动方式
 
-### 方式一：使用启动脚本（推荐）
-
-1. **启动后端**
-   - 双击 `start-backend.bat`
-   - 等待Maven依赖下载和编译完成
-   - 看到启动成功信息即可
-
-2. **启动管理端**
-   - 双击 `start-admin.bat`
-   - 等待npm依赖安装完成
-   - 浏览器自动打开 http://localhost:3000
-
-3. **启动业主端**
-   - 双击 `start-owner.bat`
-   - 等待npm依赖安装完成
-   - 浏览器自动打开 http://localhost:3001
-
-### 方式二：使用IDEA
+### 方式一：使用IDEA
 
 1. **启动后端**
    - 用IDEA打开 `backend` 目录
@@ -74,8 +53,9 @@ mysql -u root -p1234 property_management < backend/src/main/resources/db/schema.
 2. **启动前端**
    - 用IDEA打开 `frontend/admin` 或 `frontend/owner` 目录
    - 运行 npm 命令
+   - run dev
 
-### 方式三：命令行启动
+### 方式二：命令行启动
 
 ```bash
 # 后端
