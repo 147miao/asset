@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 public interface AssetService extends IService<Asset> {
-    PageResult<Asset> selectPage(Integer pageNum, Integer pageSize, String assetName, String assetType, String category, String status, Long projectId);
+    PageResult<Asset> selectPage(Integer pageNum, Integer pageSize, String assetName, String assetType, Long categoryId, String status, Long projectId);
 
     Asset selectById(Long id);
 
@@ -25,4 +25,6 @@ public interface AssetService extends IService<Asset> {
     List<Asset> selectByProjectId(Long projectId);
 
     boolean updateStatus(Long id, String status);
+
+    boolean deleteAssets(List<Long> ids);
 }

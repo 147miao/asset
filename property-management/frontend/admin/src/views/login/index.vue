@@ -67,9 +67,14 @@ const handleLogin = async () => {
       return
     }
     
+    // 检查后端返回的用户信息
+    console.log('后端返回的用户信息:', res)
+    console.log('用户类型:', res.data.userType)
+    
+    // 设置用户信息和令牌
+    userStore.setUserInfo(res.data)
     const token = generateToken(res.data)
     userStore.setToken(token)
-    userStore.setUserInfo(res.data)
     
     logger.info('登录成功', { userId: res.data.id, userName: res.data.realName, userType: res.data.userType })
     ElMessage.success('登录成功')

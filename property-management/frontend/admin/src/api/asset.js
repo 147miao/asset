@@ -38,6 +38,14 @@ export function deleteAsset(id) {
   })
 }
 
+export function deleteAssets(ids) {
+  return request({
+    url: '/asset/batch',
+    method: 'delete',
+    data: ids
+  })
+}
+
 export function exportAssets(projectId) {
   return request({
     url: '/asset/export',

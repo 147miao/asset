@@ -23,10 +23,10 @@ public class AssetController {
             @RequestParam(defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) String assetName,
             @RequestParam(required = false) String assetType,
-            @RequestParam(required = false) String category,
+            @RequestParam(required = false) Long categoryId,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Long projectId) {
-        return Result.success(assetService.selectPage(pageNum, pageSize, assetName, assetType, category, status, projectId));
+        return Result.success(assetService.selectPage(pageNum, pageSize, assetName, assetType, categoryId, status, projectId));
     }
 
     @GetMapping("/{id}")
@@ -42,6 +42,11 @@ public class AssetController {
     @PutMapping
     public Result<Boolean> update(@RequestBody Asset asset) {
         return Result.success(assetService.updateAsset(asset));
+    }
+
+    @DeleteMapping("/batch")
+    public Result<Boolean> deleteBatch(@RequestBody List<Long> ids) {
+        return Result.success(assetService.deleteAssets(ids));
     }
 
     @DeleteMapping("/{id}")

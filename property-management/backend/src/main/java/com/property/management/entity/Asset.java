@@ -14,7 +14,8 @@ public class Asset extends BaseEntity {
     private String assetCode;
     private String assetName;
     private String assetType;
-    private String category;
+    private Long categoryId;
+    private String categoryName;
     private Long projectId;
     private String projectName;
     private BigDecimal originalValue;
@@ -29,5 +30,14 @@ public class Asset extends BaseEntity {
     private String lastMaintenanceDate;
     private String scrapDate;
     private String scrapReason;
+    // 固定资产特有字段
+    private String depreciationMethod;
+    private Integer expectedLife;
+    private BigDecimal residualValue;
+    // 流动资产特有字段
+    private String supplier;
+    private String warrantyPeriod;
+    private String unit;
+    private Integer quantity;
     private String remark;
 }

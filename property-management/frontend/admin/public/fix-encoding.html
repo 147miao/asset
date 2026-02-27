@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修复编码测试</title>
+</head>
+<body>
+    <h1>修复资产分类编码</h1>
+    <button onclick="fixEncoding()">修复编码</button>
+    <div id="result"></div>
+
+    <script>
+        async function fixEncoding() {
+            try {
+                const response = await fetch('http://localhost:8080/api/asset-category/fix-encoding', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({})
+                });
+                
+                const result = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<p style="color: red;">错误: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html>

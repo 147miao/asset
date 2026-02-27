@@ -64,12 +64,28 @@ CREATE TABLE pm_user (
     UNIQUE KEY uk_phone (phone)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
 
+CREATE TABLE pm_asset_category (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
+    category_code VARCHAR(50) COMMENT '分类编码',
+    category_name VARCHAR(100) NOT NULL COMMENT '分类名称',
+    parent_id BIGINT COMMENT '父分类ID',
+    level INT COMMENT '分类级别：1-一级, 2-二级, 3-三级',
+    asset_type VARCHAR(50) NOT NULL COMMENT '资产类型：fixed-固定资产, current-流动资产',
+    description TEXT COMMENT '分类描述',
+    sort_order INT DEFAULT 0 COMMENT '排序顺序',
+    status VARCHAR(20) DEFAULT 'active' COMMENT '状态：active-启用, inactive-禁用',
+    deleted INT DEFAULT 0 COMMENT '删除标记',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='资产分类表';
+
 CREATE TABLE pm_asset (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '主键ID',
     asset_code VARCHAR(50) COMMENT '资产编号',
     asset_name VARCHAR(100) NOT NULL COMMENT '资产名称',
     asset_type VARCHAR(50) NOT NULL COMMENT '资产类型：fixed-固定资产, current-流动资产',
-    category VARCHAR(50) COMMENT '资产分类：elevator-电梯, monitor-监控, power-配电设备, office-办公用品, cleaning-保洁工具',
+    category_id BIGINT COMMENT '分类ID',
+    category_name VARCHAR(100) COMMENT '分类名称',
     project_id BIGINT COMMENT '所属项目ID',
     project_name VARCHAR(100) COMMENT '所属项目名称',
     original_value DECIMAL(15,2) COMMENT '原值',
@@ -84,6 +100,15 @@ CREATE TABLE pm_asset (
     last_maintenance_date DATE COMMENT '最后维护日期',
     scrap_date DATE COMMENT '报废日期',
     scrap_reason VARCHAR(255) COMMENT '报废原因',
+    -- 固定资产特有字段
+    depreciation_method VARCHAR(50) COMMENT '折旧方法：straight_line-直线法, accelerated-加速折旧',
+    expected_life INT COMMENT '预计使用年限(年)',
+    residual_value DECIMAL(15,2) COMMENT '残值',
+    -- 流动资产特有字段
+    supplier VARCHAR(100) COMMENT '供应商',
+    warranty_period VARCHAR(50) COMMENT '质保期',
+    unit VARCHAR(20) COMMENT '单位',
+    quantity INT COMMENT '数量',
     remark TEXT COMMENT '备注',
     deleted INT DEFAULT 0 COMMENT '删除标记',
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -228,8 +253,22 @@ INSERT INTO pm_fee_standard (project_id, project_name, fee_type, fee_name, unit_
 (1, '阳光花园', 'electricity', '电费', 0.60, '元/度', 'meter', 'monthly', 'active'),
 (2, '创业大厦', 'property', '物业费', 8.00, '元/平方米/月', 'area', 'monthly', 'active');
 
-INSERT INTO pm_asset (asset_code, asset_name, asset_type, category, project_id, project_name, original_value, current_value, purchase_date, storage_date, status, location, responsible_person) VALUES
-('AST001', '客梯A1', 'fixed', 'elevator', 1, '阳光花园', 500000.00, 450000.00, '2020-01-15', '2020-02-01', 'in_use', '1号楼', '王工程师'),
-('AST002', '监控摄像头组', 'fixed', 'monitor', 1, '阳光花园', 80000.00, 60000.00, '2020-03-01', '2020-03-15', 'in_use', '全小区', '李安全'),
-('AST003', '配电柜', 'fixed', 'power', 2, '创业大厦', 200000.00, 180000.00, '2019-06-01', '2019-07-01', 'in_use', '地下配电室', '张电工'),
-('AST004', '办公桌椅', 'current', 'office', NULL, NULL, 5000.00, 4000.00, '2022-01-01', '2022-01-05', 'in_use', '物业办公室', '行政部');
+INSERT INTO pm_asset_category (category_code, category_name, parent_id, level, asset_type, description, sort_order, status) VALUES
+('FIXED_001', '电梯设备', NULL, 1, 'fixed', '电梯相关设备', 1, 'active'),
+('FIXED_001_001', '客梯', 1, 2, 'fixed', '乘客电梯', 1, 'active'),
+('FIXED_001_002', '货梯', 1, 2, 'fixed', '货物电梯', 2, 'active'),
+('FIXED_002', '安防设备', NULL, 1, 'fixed', '安全防护设备', 2, 'active'),
+('FIXED_002_001', '监控系统', 4, 2, 'fixed', '视频监控系统', 1, 'active'),
+('FIXED_002_002', '门禁系统', 4, 2, 'fixed', '出入口控制系统', 2, 'active'),
+('FIXED_003', '配电设备', NULL, 1, 'fixed', '电力分配设备', 3, 'active'),
+('FIXED_003_001', '配电柜', 7, 2, 'fixed', '电力配电柜', 1, 'active'),
+('CURRENT_001', '办公用品', NULL, 1, 'current', '办公相关用品', 1, 'active'),
+('CURRENT_001_001', '办公家具', 9, 2, 'current', '办公桌椅等家具', 1, 'active'),
+('CURRENT_001_002', '办公设备', 9, 2, 'current', '电脑、打印机等设备', 2, 'active'),
+('CURRENT_002', '保洁用品', NULL, 1, 'current', '清洁卫生用品', 2, 'active');
+
+INSERT INTO pm_asset (asset_code, asset_name, asset_type, category_id, category_name, project_id, project_name, original_value, current_value, purchase_date, storage_date, status, location, responsible_person, depreciation_method, expected_life, residual_value, supplier, warranty_period, unit, quantity) VALUES
+('AST001', '客梯A1', 'fixed', 2, '客梯', 1, '阳光花园', 500000.00, 450000.00, '2020-01-15', '2020-02-01', 'in_use', '1号楼', '王工程师', 'straight_line', 20, 50000.00, '三菱电梯', '24个月', NULL, NULL),
+('AST002', '监控摄像头组', 'fixed', 5, '监控系统', 1, '阳光花园', 80000.00, 60000.00, '2020-03-01', '2020-03-15', 'in_use', '全小区', '李安全', 'straight_line', 10, 8000.00, '海康威视', '36个月', NULL, NULL),
+('AST003', '配电柜', 'fixed', 8, '配电柜', 2, '创业大厦', 200000.00, 180000.00, '2019-06-01', '2019-07-01', 'in_use', '地下配电室', '张电工', 'straight_line', 15, 20000.00, '施耐德', '24个月', NULL, NULL),
+('AST004', '办公桌椅', 'current', 10, '办公家具', NULL, NULL, 5000.00, 4000.00, '2022-01-01', '2022-01-05', 'in_use', '物业办公室', '行政部', NULL, NULL, NULL, '宜家', '12个月', '套', 5);

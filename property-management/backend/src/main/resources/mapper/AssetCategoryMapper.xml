@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.property.management.mapper.AssetCategoryMapper">
+
+    <select id="selectByParentId" resultType="com.property.management.entity.AssetCategory">
+        SELECT * FROM pm_asset_category 
+        WHERE parent_id = #{parentId} AND deleted = 0 
+        ORDER BY sort_order ASC
+    </select>
+
+    <select id="selectByAssetType" resultType="com.property.management.entity.AssetCategory">
+        SELECT * FROM pm_asset_category 
+        WHERE asset_type = #{assetType} AND deleted = 0 
+        ORDER BY level ASC, sort_order ASC
+    </select>
+
+    <select id="selectAllCategoryTree" resultType="com.property.management.entity.AssetCategory">
+        SELECT * FROM pm_asset_category 
+        WHERE deleted = 0 
+        ORDER BY asset_type ASC, level ASC, sort_order ASC
+    </select>
+
+    <update id="fixEncoding">
+        DELETE FROM pm_asset_category WHERE deleted = 0
+    </update>
+
+    <insert id="insertFixedCategories">
+        INSERT INTO pm_asset_category (category_code, category_name, parent_id, level, asset_type, description, sort_order, status) VALUES
+        ('FA001', '房屋建筑物', NULL, 1, 'fixed', '企业拥有的房屋、建筑物等', 1, 'active'),
+        ('FA00101', '办公楼', 1, 2, 'fixed', '企业办公使用的建筑物', 1, 'active'),
+        ('FA00102', '厂房', 1, 2, 'fixed', '企业生产使用的建筑物', 2, 'active'),
+        ('FA002', '机器设备', NULL, 1, 'fixed', '企业生产经营使用的机器设备', 2, 'active'),
+        ('FA00201', '生产设备', 4, 2, 'fixed', '直接用于生产的设备', 1, 'active'),
+        ('FA00202', '办公设备', 4, 2, 'fixed', '办公使用的设备', 2, 'active'),
+        ('FA003', '交通工具', NULL, 1, 'fixed', '企业使用的交通工具', 3, 'active'),
+        ('FA00301', '汽车', 7, 2, 'fixed', '企业拥有的汽车', 1, 'active'),
+        ('FA00302', '其他交通工具', 7, 2, 'fixed', '其他类型的交通工具', 2, 'active'),
+        ('CA001', '原材料', NULL, 1, 'current', '生产用原材料', 1, 'active'),
+        ('CA00101', '主要材料', 10, 2, 'current', '生产主要使用的材料', 1, 'active'),
+        ('CA00102', '辅助材料', 10, 2, 'current', '生产辅助使用的材料', 2, 'active'),
+        ('CA002', '低值易耗品', NULL, 1, 'current', '价值较低的易耗品', 2, 'active'),
+        ('CA00201', '办公用品', 13, 2, 'current', '办公使用的易耗品', 1, 'active'),
+        ('CA00202', '生产工具', 13, 2, 'current', '生产使用的工具', 2, 'active'),
+        ('CA003', '库存商品', NULL, 1, 'current', '企业库存的商品', 3, 'active'),
+        ('CA00301', '成品', 16, 2, 'current', '已完成生产的成品', 1, 'active'),
+        ('CA00302', '半成品', 16, 2, 'current', '未完成生产的半成品', 2, 'active')
+    </insert>
+
+</mapper>
