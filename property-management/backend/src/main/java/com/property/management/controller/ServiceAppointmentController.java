@@ -35,6 +35,12 @@ public class ServiceAppointmentController {
 
     @PostMapping
     public Result<Boolean> add(@RequestBody ServiceAppointment appointment) {
+        if (appointment.getUserId() == null) {
+            return Result.error("用户ID不能为空");
+        }
+        if (appointment.getServiceName() == null || appointment.getServiceName().trim().isEmpty()) {
+            return Result.error("服务名称不能为空");
+        }
         return Result.success(serviceAppointmentService.addAppointment(appointment));
     }
 

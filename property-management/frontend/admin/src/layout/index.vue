@@ -64,10 +64,10 @@
           <div class="header-right">
             <el-dropdown>
               <span class="user-info">
-                <el-avatar :size="32" :src="userStore.userInfo.avatar">
-                  {{ userStore.userInfo.realName?.charAt(0) }}
+                <el-avatar :size="32" :src="userStore.userInfo?.avatar">
+                  {{ userStore.userInfo?.realName?.charAt(0) }}
                 </el-avatar>
-                <span class="user-name">{{ userStore.userInfo.realName }}</span>
+                <span class="user-name">{{ userStore.userInfo?.realName }}</span>
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -85,7 +85,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'

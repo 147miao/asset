@@ -120,24 +120,26 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import { Search, RefreshLeft, Plus } from '@element-plus/icons-vue'
 import { getUserPage, addUser, updateUser, deleteUser, resetPassword, updateStatus } from '@/api/user'
 import { getAllProjects } from '@/api/project'
 import { logger } from '@/utils/request'
+import type { User, Project } from '@/types'
 
 const loading = ref(false)
 const submitLoading = ref(false)
-const tableData = ref([])
+const tableData = ref<User[]>([])
 const total = ref(0)
 const pageNum = ref(1)
 const pageSize = ref(10)
 const dialogVisible = ref(false)
 const dialogTitle = ref('新增用户')
-const formRef = ref(null)
-const projectList = ref([])
+const formRef = ref<FormInstance>()
+const projectList = ref<Project[]>([])
 
 const searchForm = reactive({
   userName: '',
@@ -147,18 +149,18 @@ const searchForm = reactive({
 })
 
 const form = reactive({
-  id: null,
+  id: '',
   realName: '',
   phone: '',
   userType: 'owner',
-  projectId: null,
+  projectId: '',
   email: '',
   idCard: '',
   address: '',
   remark: ''
 })
 
-const rules = {
+const rules: FormRules = {
   realName: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   phone: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
@@ -167,35 +169,36 @@ const rules = {
   userType: [{ required: true, message: '请选择用户类型', trigger: 'change' }]
 }
 
-const userTypeMap = {
+const userTypeMap: Record<string, { text: string; color: string }> = {
   owner: { text: '业主', color: 'primary' },
   tenant: { text: '租户', color: 'success' },
   employee: { text: '员工', color: 'warning' }
 }
 
-const getUserTypeText = (type) => userTypeMap[type]?.text || type
-const getUserTypeColor = (type) => userTypeMap[type]?.color || 'info'
+const getUserTypeText = (type: string): string => userTypeMap[type]?.text || type
+const getUserTypeColor = (type: string): string => userTypeMap[type]?.color || 'info'
 
 const loadData = async () => {
   loading.value = true
   logger.info('加载用户列表', { pageNum: pageNum.value, pageSize: pageSize.value, searchForm })
   
   try {
-    const res = await getUserPage({ ...searchForm, pageNum: pageNum.value, pageSize: pageSize.value })
+    const res = await getUserPage({ ...searchForm, page: pageNum.value, size: pageSize.value })
+    const data = (res as unknown as { data: { list: User[]; total: number } }).data
     
-    if (!res.data) {
+    if (!data) {
       logger.warn('用户列表响应数据为空')
       tableData.value = []
       total.value = 0
       return
     }
     
-    tableData.value = res.data.records || []
-    total.value = res.data.total || 0
+    tableData.value = data.list || []
+    total.value = data.total || 0
     logger.info('用户列表加载成功', { total: total.value, count: tableData.value.length })
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('加载用户列表失败', error)
-    ElMessage.error(error.message || '加载用户列表失败')
+    ElMessage.error(error instanceof Error ? error.message : '加载用户列表失败')
     tableData.value = []
     total.value = 0
   } finally {
@@ -208,9 +211,9 @@ const loadProjects = async () => {
   
   try {
     const res = await getAllProjects()
-    projectList.value = res.data || []
+    projectList.value = (res as unknown as { data: Project[] }).data || []
     logger.info('项目列表加载成功', { count: projectList.value.length })
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('加载项目列表失败', error)
     ElMessage.error('加载项目列表失败')
     projectList.value = []
@@ -232,18 +235,18 @@ const handleReset = () => {
 const handleAdd = () => {
   logger.info('打开新增用户对话框')
   dialogTitle.value = '新增用户'
-  Object.assign(form, { id: null, realName: '', phone: '', userType: 'owner', projectId: null, email: '', idCard: '', address: '', remark: '' })
+  Object.assign(form, { id: '', realName: '', phone: '', userType: 'owner', projectId: '', email: '', idCard: '', address: '', remark: '' })
   dialogVisible.value = true
 }
 
-const handleEdit = (row) => {
+const handleEdit = (row: User) => {
   logger.info('打开编辑用户对话框', { userId: row.id, userName: row.realName })
   dialogTitle.value = '编辑用户'
   Object.assign(form, row)
   dialogVisible.value = true
 }
 
-const handleDelete = async (row) => {
+const handleDelete = async (row: User) => {
   try {
     await ElMessageBox.confirm('确定要删除该用户吗？', '提示', { type: 'warning' })
   } catch {
@@ -258,13 +261,13 @@ const handleDelete = async (row) => {
     logger.info('用户删除成功', { userId: row.id })
     ElMessage.success('删除成功')
     loadData()
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('删除用户失败', { userId: row.id, error })
-    ElMessage.error(error.message || '删除失败')
+    ElMessage.error(error instanceof Error ? error.message : '删除失败')
   }
 }
 
-const handleResetPwd = async (row) => {
+const handleResetPwd = async (row: User) => {
   try {
     await ElMessageBox.confirm('确定要重置该用户的密码吗？', '提示', { type: 'warning' })
   } catch {
@@ -278,27 +281,29 @@ const handleResetPwd = async (row) => {
     await resetPassword(row.id)
     logger.info('密码重置成功', { userId: row.id })
     ElMessage.success('密码已重置为123456')
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('重置密码失败', { userId: row.id, error })
-    ElMessage.error(error.message || '重置密码失败')
+    ElMessage.error(error instanceof Error ? error.message : '重置密码失败')
   }
 }
 
-const handleStatusChange = async (row) => {
+const handleStatusChange = async (row: User & { status: string }) => {
   logger.info('更新用户状态', { userId: row.id, newStatus: row.status })
   
   try {
     await updateStatus(row.id, row.status)
     logger.info('状态更新成功', { userId: row.id, status: row.status })
     ElMessage.success('状态更新成功')
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('状态更新失败', { userId: row.id, error })
     row.status = row.status === 'active' ? 'disabled' : 'active'
-    ElMessage.error(error.message || '状态更新失败')
+    ElMessage.error(error instanceof Error ? error.message : '状态更新失败')
   }
 }
 
 const handleSubmit = async () => {
+  if (!formRef.value) return
+  
   try {
     await formRef.value.validate()
   } catch (error) {
@@ -322,9 +327,9 @@ const handleSubmit = async () => {
     }
     dialogVisible.value = false
     loadData()
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('保存用户失败', { form, error })
-    ElMessage.error(error.message || '保存失败')
+    ElMessage.error(error instanceof Error ? error.message : '保存失败')
   } finally {
     submitLoading.value = false
   }

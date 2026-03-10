@@ -1,0 +1,47 @@
+import { 
+  HomeOutlined, 
+  HomeFilled, 
+  DollarOutlined, 
+  ToolOutlined, 
+  CustomerServiceOutlined, 
+  BellOutlined, 
+  UserOutlined,
+  ArrowLeftOutlined,
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  SearchOutlined,
+  FilterOutlined,
+  CheckCircleOutlined,
+  ClockCircleOutlined,
+  ExclamationCircleOutlined,
+  CloseCircleOutlined,
+  RightOutlined,
+  SettingOutlined,
+  LogoutOutlined
+} from '@ant-design/icons'
+
+export const Icons = {
+  Home: HomeOutlined,
+  HomeFilled: HomeFilled,
+  Dollar: DollarOutlined,
+  Tool: ToolOutlined,
+  Service: CustomerServiceOutlined,
+  Bell: BellOutlined,
+  User: UserOutlined,
+  ArrowLeft: ArrowLeftOutlined,
+  Plus: PlusOutlined,
+  Edit: EditOutlined,
+  Delete: DeleteOutlined,
+  Search: SearchOutlined,
+  Filter: FilterOutlined,
+  CheckCircle: CheckCircleOutlined,
+  Clock: ClockCircleOutlined,
+  Warning: ExclamationCircleOutlined,
+  Error: CloseCircleOutlined,
+  Right: RightOutlined,
+  Settings: SettingOutlined,
+  Logout: LogoutOutlined,
+}
+
+export type IconName = keyof typeof Icons

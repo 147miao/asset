@@ -51,6 +51,9 @@ public class ServiceAppointmentServiceImpl extends ServiceImpl<ServiceAppointmen
         if (StrUtil.isBlank(appointment.getAppointmentNo())) {
             appointment.setAppointmentNo("SVC" + IdUtil.getSnowflakeNextIdStr());
         }
+        if (StrUtil.isBlank(appointment.getServiceType())) {
+            appointment.setServiceType("other");
+        }
         appointment.setStatus("pending");
         boolean result = save(appointment);
         if (result) {

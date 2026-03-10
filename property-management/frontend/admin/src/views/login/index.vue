@@ -17,18 +17,20 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import { login } from '@/api/user'
 import { useUserStore } from '@/stores/user'
 import { logger } from '@/utils/request'
 import { encodeToken } from '@/utils/base64'
+import type { User } from '@/types'
 
 const router = useRouter()
 const userStore = useUserStore()
-const formRef = ref(null)
+const formRef = ref<FormInstance>()
 const loading = ref(false)
 
 const loginForm = reactive({
@@ -36,7 +38,7 @@ const loginForm = reactive({
   password: ''
 })
 
-const rules = {
+const rules: FormRules = {
   phone: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
     { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
@@ -48,6 +50,8 @@ const rules = {
 }
 
 const handleLogin = async () => {
+  if (!formRef.value) return
+  
   try {
     await formRef.value.validate()
   } catch (error) {
@@ -59,7 +63,7 @@ const handleLogin = async () => {
   logger.info('开始登录请求', { phone: loginForm.phone })
   
   try {
-    const res = await login(loginForm)
+    const res = await login(loginForm) as unknown as { data: User & { userType: string } }
     
     if (!res.data) {
       logger.error('登录响应数据为空')
@@ -67,11 +71,9 @@ const handleLogin = async () => {
       return
     }
     
-    // 检查后端返回的用户信息
     console.log('后端返回的用户信息:', res)
     console.log('用户类型:', res.data.userType)
     
-    // 设置用户信息和令牌
     userStore.setUserInfo(res.data)
     const token = generateToken(res.data)
     userStore.setToken(token)
@@ -79,10 +81,10 @@ const handleLogin = async () => {
     logger.info('登录成功', { userId: res.data.id, userName: res.data.realName, userType: res.data.userType })
     ElMessage.success('登录成功')
     router.push('/')
-  } catch (error) {
+  } catch (error: unknown) {
     logger.error('登录失败', error)
     
-    if (error.message) {
+    if (error instanceof Error) {
       ElMessage.error(error.message)
     } else {
       ElMessage.error('登录失败，请稍后重试')
@@ -92,7 +94,7 @@ const handleLogin = async () => {
   }
 }
 
-const generateToken = (user) => {
+const generateToken = (user: User & { userType: string }): string => {
   if (!user || !user.id) {
     logger.error('生成Token失败：用户信息无效', user)
     throw new Error('用户信息无效')
