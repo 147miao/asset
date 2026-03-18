@@ -50,7 +50,8 @@ function Home() {
       setHouses(houseRes.data || [])
       setUnpaidFees(feeRes.data || [])
       setRepairs((repairRes.data || []).slice(0, 5) as RepairItem[])
-      setUnreadCount(msgRes.data?.length || 0)
+      const msgData = msgRes.data as unknown[]
+      setUnreadCount(Array.isArray(msgData) ? msgData.length : 0)
     } catch {
       message.error('加载数据失败，请稍后重试')
     } finally {

@@ -19,6 +19,7 @@ export const decodeBase64 = (str: string): string => {
 export interface TokenData {
   userId: string
   username: string
+  userType?: string
 }
 
 export const encodeToken = (data: TokenData): string => {

@@ -260,11 +260,10 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-container {
-  padding: 16px;
-  
   .main-card {
+    border: none;
     border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   }
   
   .card-header {
@@ -278,7 +277,7 @@ onMounted(() => {
     .title {
       font-size: 18px;
       font-weight: 600;
-      color: #303133;
+      color: #1f2937;
     }
   }
   

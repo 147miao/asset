@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { login } from '../../api'
 import { useUserStore } from '../../stores/user'
 import { encodeToken } from '../../utils/base64'
+import type { User } from '../../types'
 import './login.css'
 
 interface LoginFormValues {
@@ -19,16 +20,17 @@ function Login() {
 
   const handleSubmit = async (values: LoginFormValues) => {
     try {
-      const res = await login(values) as { id: string; realName: string; username: string; phone: string }
+      const res = await login(values) as unknown as { data: User }
       
-      if (!res) {
+      if (!res || !res.data) {
         message.error('登录失败：服务器响应异常')
         return
       }
       
-      const token = encodeToken({ userId: res.id, username: res.realName || res.username })
+      const userInfo = res.data
+      const token = encodeToken({ userId: userInfo.id, username: userInfo.realName || userInfo.username, userType: userInfo.userType })
       setToken(token)
-      setUserInfo(res)
+      setUserInfo(userInfo)
       
       message.success('登录成功')
       navigate('/')

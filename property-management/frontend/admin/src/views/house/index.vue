@@ -132,9 +132,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-container {
-  padding: 24px;
-  
   .main-card {
+    border: none;
     border-radius: 8px;
   }
   
@@ -146,14 +145,36 @@ onMounted(() => {
     .title {
       font-size: 18px;
       font-weight: 600;
-      color: #303133;
+      color: #1f2937;
     }
   }
   
   .search-form {
     padding: 20px 0;
     border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
+  }
+  
+  :deep(.el-card) {
+    --el-card-border-radius: 8px;
+  }
+  
+  :deep(.el-table) {
+    .el-table__header-wrapper {
+      th {
+        background: #fafafa;
+        color: #606266;
+        font-weight: 600;
+      }
+    }
+    
+    .el-table__body-wrapper {
+      .el-table__row {
+        &:hover > td {
+          background: #fafafa !important;
+        }
+      }
+    }
   }
 }
 </style>

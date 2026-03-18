@@ -22,7 +22,8 @@ function Message() {
     setLoading(true)
     try {
       const res = await getMessages(userInfo.id)
-      setMessages(res.data || [])
+      const data = res.data as { records?: Message[] } | undefined
+      setMessages(data?.records || [])
     } catch {
       message.error('加载消息失败')
     } finally {

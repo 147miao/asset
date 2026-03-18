@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Card, Table, Tag, message } from 'antd'
 import { useUserStore } from '../../stores/user'
-import { getHouseList, getHousesByOwner } from '../../api'
+import { getHousesByOwner } from '../../api'
 import type { House } from '../../types'
 
 function House() {

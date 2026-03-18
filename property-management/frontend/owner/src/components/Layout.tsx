@@ -32,7 +32,8 @@ function Layout() {
 
       try {
         const res = await getUnreadMessages(userInfo.id)
-        setUnreadCount(res.data?.length || 0)
+        const data = res.data as unknown[]
+        setUnreadCount(Array.isArray(data) ? data.length : 0)
       } catch {
         setUnreadCount(0)
       }

@@ -147,7 +147,7 @@ request.interceptors.response.use(
       return Promise.reject(new Error(errorMessage))
     }
     
-    return response
+    return response.data
   },
   (error: AxiosError) => {
     logger.logError(error)

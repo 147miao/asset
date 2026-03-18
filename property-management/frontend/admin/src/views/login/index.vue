@@ -3,8 +3,8 @@
     <div class="login-box">
       <h2 class="title">物业管理系统</h2>
       <el-form :model="loginForm" :rules="rules" ref="formRef">
-        <el-form-item prop="phone">
-          <el-input v-model="loginForm.phone" placeholder="请输入手机号" prefix-icon="User" />
+        <el-form-item prop="username">
+          <el-input v-model="loginForm.username" placeholder="请输入手机号" prefix-icon="User" />
         </el-form-item>
         <el-form-item prop="password">
           <el-input v-model="loginForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password @keyup.enter="handleLogin" />
@@ -26,7 +26,7 @@ import { login } from '@/api/user'
 import { useUserStore } from '@/stores/user'
 import { logger } from '@/utils/request'
 import { encodeToken } from '@/utils/base64'
-import type { User } from '@/types'
+import type { User, ApiResponse } from '@/types'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -34,12 +34,12 @@ const formRef = ref<FormInstance>()
 const loading = ref(false)
 
 const loginForm = reactive({
-  phone: '',
+  username: '',
   password: ''
 })
 
 const rules: FormRules = {
-  phone: [
+  username: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
     { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
   ],
@@ -60,25 +60,26 @@ const handleLogin = async () => {
   }
   
   loading.value = true
-  logger.info('开始登录请求', { phone: loginForm.phone })
+  logger.info('开始登录请求', { phone: loginForm.username })
   
   try {
-    const res = await login(loginForm) as unknown as { data: User & { userType: string } }
+    const res = await login({ phone: loginForm.username, password: loginForm.password })
     
-    if (!res.data) {
+    if (!res || !res.data) {
       logger.error('登录响应数据为空')
       ElMessage.error('登录失败：服务器响应异常')
       return
     }
     
-    console.log('后端返回的用户信息:', res)
-    console.log('用户类型:', res.data.userType)
+    const userInfo = res.data
+    console.log('后端返回的用户信息:', userInfo)
+    console.log('用户类型:', userInfo.userType)
     
-    userStore.setUserInfo(res.data)
-    const token = generateToken(res.data)
+    userStore.setUserInfo(userInfo)
+    const token = encodeToken({ userId: userInfo.id, username: userInfo.realName, userType: userInfo.userType })
     userStore.setToken(token)
     
-    logger.info('登录成功', { userId: res.data.id, userName: res.data.realName, userType: res.data.userType })
+    logger.info('登录成功', { userId: userInfo.id, userName: userInfo.realName, userType: userInfo.userType })
     ElMessage.success('登录成功')
     router.push('/')
   } catch (error: unknown) {
@@ -92,14 +93,6 @@ const handleLogin = async () => {
   } finally {
     loading.value = false
   }
-}
-
-const generateToken = (user: User & { userType: string }): string => {
-  if (!user || !user.id) {
-    logger.error('生成Token失败：用户信息无效', user)
-    throw new Error('用户信息无效')
-  }
-  return encodeToken({ userId: user.id, username: user.realName, userType: user.userType })
 }
 </script>
 

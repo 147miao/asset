@@ -6,6 +6,8 @@ export interface User {
   phone: string
   avatar?: string
   token?: string
+  userType?: string
+  role?: string
 }
 
 export interface LoginParams {

@@ -31,3 +31,10 @@ export function deleteMessage(id: string): Promise<ApiResponse<void>> {
     method: 'delete'
   })
 }
+
+export function getUnreadMessages(userId: string): Promise<ApiResponse<Message[]>> {
+  return request({
+    url: `/message/unread/${userId}`,
+    method: 'get'
+  })
+}

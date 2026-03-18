@@ -631,11 +631,10 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .page-container {
-  padding: 16px;
-  
   .main-card {
+    border: none;
     border-radius: 8px;
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   }
   
   .card-header {
@@ -649,7 +648,7 @@ onMounted(() => {
     .title {
       font-size: 18px;
       font-weight: 600;
-      color: #303133;
+      color: #1f2937;
     }
     
     .header-actions {
@@ -690,10 +689,29 @@ onMounted(() => {
     width: 100%;
   }
   
-  // 响应式设计
-  @media (max-width: 1199px) {
-    padding: 12px;
+  :deep(.el-card) {
+    --el-card-border-radius: 8px;
+  }
+  
+  :deep(.el-table) {
+    .el-table__header-wrapper {
+      th {
+        background: #fafafa;
+        color: #606266;
+        font-weight: 600;
+      }
+    }
     
+    .el-table__body-wrapper {
+      .el-table__row {
+        &:hover > td {
+          background: #fafafa !important;
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 1199px) {
     .card-header {
       flex-direction: column;
       align-items: flex-start;
@@ -719,8 +737,6 @@ onMounted(() => {
   }
   
   @media (max-width: 767px) {
-    padding: 8px;
-    
     .card-header {
       .title {
         font-size: 16px;

@@ -6,6 +6,7 @@ export interface User {
   email?: string
   avatar?: string
   role: 'admin' | 'staff'
+  userType?: string
   status: 'active' | 'inactive'
   createTime?: string
 }
@@ -123,7 +124,7 @@ export interface DashboardStats {
 }
 
 export interface LoginParams {
-  username: string
+  phone: string
   password: string
 }
 
